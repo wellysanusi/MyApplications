@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<style type="text/css">
+    body{
+        background:#202020;
+        font:bold 12px Arial, Helvetica, sans-serif;
+        margin:0;
+        padding:0;
+        color:#bbbbbb;
+    }
+
+    ul { width:550px; margin:0 auto; padding:0px; list-style:none; text-align:center; border:1px solid #333;}
+    ul li { display:inline; font-size:8em; text-align:center; font-family:'BebasNeueRegular', Arial, Helvetica, sans-serif; text-shadow:0 0 5px #00c6ff; }
+
+    #colon {
+        position: relative;
+        -moz-animation: mymove 1s ease infinite;
+        -webkit-animation: mymove 1s ease infinite;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+</style>
+<script>
+    var x = setInterval(function () {
+        $.ajax({
+            type: "POST",
+            url: "@Url.Action("ClockTick")",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                $("#hour").html(data.Hour);
+                $("#min").html(data.Min);
+                $("#sec").html(data.Sec);
+            },
+            failure: function() {
+                alert("Error");
+            }
+        });
+    }, (1000));
+
+    function updateDecrement() {
+        var message;
+
+        var x = $("#txtDecrement").val();
+        if (isNaN(x) || x < 0) {
+            message = "Input must be integer and positive";
+            $("#errorMessage").html(message);
+        } else {
+            $("#errorMessage").html("");
+            var dataToSend = {
+                "decrement": $("#txtDecrement").val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("ClockDecrement")",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(dataToSend),
+                success: function () {
+                },
+                failure: function() {
+                    alert("Error");
+                }
+            });
+        }
+    };
+</script>
+<body>
+    <ul>
+        <li id="hour" runat="server">@ViewBag.Hour</li>
+        <li id="colon">:</li>
+        <li id="min" runat="server">@ViewBag.Min</li>
+        <li id="colon">:</li>
+        <li id="sec" runat="server">@ViewBag.Sec</li>
+    </ul>
+    <br /><br />
+    <input id="txtDecrement" type="text" />
+    <button onclick="updateDecrement()">Decrement</button>
+    <br /><br />
+    <p id="errorMessage" style="color: red;"></p>
+</body>
